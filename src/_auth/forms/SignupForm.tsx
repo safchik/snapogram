@@ -11,9 +11,11 @@ import { Button } from "@/components/ui/button"
 import Loader from "@/components/shared/loader"
 import { createUserAccount } from "@/lib/appwrite/api"
 
+import { useToast } from "@/components/ui/use-toast"
 
 
 const SignupForm = () => {
+    const { toast } = useToast();
     const isLoading = false;
 
     // 1. Define your form.
@@ -31,7 +33,11 @@ const SignupForm = () => {
     async function onSubmit(values: z.infer<typeof SignupValidation>) {
         const newUser = await createUserAccount(values);
 
-        console.log(newUser)
+        if (!newUser) {
+            toast({ title: "Sign up failed. Please try again." });
+
+            return;
+        }
     }
 
     return (
