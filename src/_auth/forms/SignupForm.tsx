@@ -1,14 +1,13 @@
-
+import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Link } from "react-router-dom"
 
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage, } from "@/components/ui/form"
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-
-import { Button } from "@/components/ui/button"
 import { useForm } from "react-hook-form"
 import { SignupValidation } from "@/lib/validation"
-import { z } from "zod"
+
+import { Button } from "@/components/ui/button"
 import Loader from "@/components/shared/loader"
 import { createUserAccount } from "@/lib/appwrite/api"
 
@@ -16,6 +15,7 @@ import { createUserAccount } from "@/lib/appwrite/api"
 
 const SignupForm = () => {
     const isLoading = false;
+
     // 1. Define your form.
     const form = useForm<z.infer<typeof SignupValidation>>({
         resolver: zodResolver(SignupValidation),
@@ -47,7 +47,7 @@ const SignupForm = () => {
                 </p>
 
                 <form
-
+                    onSubmit={form.handleSubmit(onSubmit)}
                     className="flex flex-col gap-5 w-full mt-4">
                     <FormField
                         control={form.control}
