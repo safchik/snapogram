@@ -67,12 +67,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
 
     useEffect(() => {
-        //const cookieFallback = localStorage.getItem("cookieFallback");
+        const cookieFallback = localStorage.getItem("cookieFallback");
         if (
-            localStorage.getItem('cookieFallback') === '[]'
-            // cookieFallback === "[]" ||
-            // cookieFallback === null ||
-            // cookieFallback === undefined
+
+            cookieFallback === "[]" ||
+            cookieFallback === null ||
+            cookieFallback === undefined
         ) {
             navigate("/sign-in");
         }
