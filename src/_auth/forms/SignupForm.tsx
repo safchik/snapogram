@@ -13,6 +13,8 @@ import { useCreateUserAccount, useSignInAccount } from "@/lib/react-query/querie
 import { SignupValidation } from "@/lib/validation";
 import { useUserContext } from "@/context/AuthContext";
 
+
+
 const SignupForm = () => {
     const { toast } = useToast();
     const navigate = useNavigate();
@@ -29,8 +31,8 @@ const SignupForm = () => {
     });
 
     // Queries
-    const { mutateAsync: createUserAccount, isLoading: isCreatingAccount } = useCreateUserAccount();
-    const { mutateAsync: signInAccount, isLoading: isSigningInUser } = useSignInAccount();
+    const { mutateAsync: createUserAccount, isPending: isCreatingAccount } = useCreateUserAccount();
+    const { mutateAsync: signInAccount } = useSignInAccount();
 
     // Handler
     const handleSignup = async (user: z.infer<typeof SignupValidation>) => {
@@ -144,7 +146,7 @@ const SignupForm = () => {
                     />
 
                     <Button type="submit" className="shad-button_primary">
-                        {isCreatingAccount || isSigningInUser || isUserLoading ? (
+                        {isCreatingAccount || isUserLoading ? (
                             <div className="flex-center gap-2">
                                 <Loader /> Loading...
                             </div>

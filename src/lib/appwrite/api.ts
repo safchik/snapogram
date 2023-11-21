@@ -1,4 +1,4 @@
-import { ID } from "appwrite";
+import { ID, Query } from "appwrite";
 
 import { INewUser } from "@/types";
 import { account, appwriteConfig, avatars, databases } from "./config";
@@ -54,7 +54,7 @@ export async function saveUserToDB(user: {
 export async function signInAccount(user: { email: string; password: string }) {
     try {
         const session = await account.createEmailSession(user.email, user.password);
-
+        localStorage.setItem("sessionId", session.userId);
         return session;
     } catch (error) {
         console.log(error);
@@ -63,21 +63,27 @@ export async function signInAccount(user: { email: string; password: string }) {
 
 export async function getCurrentUser() {
     try {
-        const currentAccount = await account.get();
+        //const currentAccount = await account.get();
+        const currentAccountId = localStorage.getItem("sessionId");
 
-        if (!currentAccount) throw Error;
 
-        const currentUser = await databases.listDocuments(
-            appwriteConfig.databaseId,
-            appwriteConfig.userCollectionId,
-            [Query.equal("accountId", currentAccount.$id)]
-        );
+        if (currentAccountId !== null) {
+            // if (!currentAccount) throw Error;
 
-        if (!currentUser) throw Error;
+            const currentUser = await databases.listDocuments(
+                appwriteConfig.databaseId,
+                appwriteConfig.userCollectionId,
+                // [Query.equal("accountId", currentAccount.$id)]
+                [Query.equal("accountId", currentAccountId)]
+            );
 
-        return currentUser.documents[0];
+            // console.log("currentUser:", currentUser);
+
+            if (!currentUser) throw Error;
+
+            return currentUser.documents[0];
+        }
     } catch (error) {
         console.log(error);
-        return null;
     }
 }
