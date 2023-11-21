@@ -29,8 +29,8 @@ const SignupForm = () => {
     });
 
     // Queries
-    const { mutateAsync: createUserAccount, isPending: isCreatingAccount } = useCreateUserAccount();
-    const { mutateAsync: signInAccount, isPending: isSigningInUser } = useSignInAccount();
+    const { mutateAsync: createUserAccount, isLoading: isCreatingAccount } = useCreateUserAccount();
+    const { mutateAsync: signInAccount, isLoading: isSigningInUser } = useSignInAccount();
 
     // Handler
     const handleSignup = async (user: z.infer<typeof SignupValidation>) => {
@@ -144,7 +144,7 @@ const SignupForm = () => {
                     />
 
                     <Button type="submit" className="shad-button_primary">
-                        {isCreatingAccount ? (
+                        {isCreatingAccount || isSigningInUser || isUserLoading ? (
                             <div className="flex-center gap-2">
                                 <Loader /> Loading...
                             </div>
