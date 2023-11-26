@@ -1,7 +1,7 @@
 import * as z from "zod";
-
+import { Models } from "appwrite";
 import { useForm } from "react-hook-form";
-
+import { useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import {
@@ -16,30 +16,69 @@ import {
     Textarea,
 } from "@/components/ui";
 
-import { FileUploader } from "@/components/shared";
+import { PostValidation } from "@/lib/validation";
+import { useToast } from "@/components/ui/use-toast";
+import { useUserContext } from "@/context/AuthContext";
+import { FileUploader, Loader } from "@/components/shared";
+import { useCreatePost, useUpdatePost } from "@/lib/react-query/queriesAndMutations";
 
+type PostFormProps = {
+    post?: Models.Document;
+    action: "Create" | "Update";
+};
 
-const formSchema = z.object({
-    username: z.string().min(2, {
-        message: "Username must be at least 2 characters.",
-    }),
-})
-
-const PostForm = () => {
-    // 1. Define your form.
-    const form = useForm<z.infer<typeof formSchema>>({
-        resolver: zodResolver(formSchema),
+const PostForm = ({ post, action }: PostFormProps) => {
+    const navigate = useNavigate();
+    const { toast } = useToast();
+    const { user } = useUserContext();
+    const form = useForm<z.infer<typeof PostValidation>>({
+        resolver: zodResolver(PostValidation),
         defaultValues: {
-            username: "",
+            caption: post ? post?.caption : "",
+            file: [],
+            location: post ? post.location : "",
+            tags: post ? post.tags.join(",") : "",
         },
-    })
+    });
 
-    // 2. Define a submit handler.
-    function onSubmit(values: z.infer<typeof formSchema>) {
-        // Do something with the form values.
-        // ✅ This will be type-safe and validated.
-        console.log(values)
-    }
+    // Query
+    const { mutateAsync: createPost, isLoading: isLoadingCreate } =
+        useCreatePost();
+    const { mutateAsync: updatePost, isLoading: isLoadingUpdate } =
+        useUpdatePost();
+
+    // Handler
+    const handleSubmit = async (value: z.infer<typeof PostValidation>) => {
+        // ACTION = UPDATE
+        if (post && action === "Update") {
+            const updatedPost = await updatePost({
+                ...value,
+                postId: post.$id,
+                imageId: post.imageId,
+                imageUrl: post.imageUrl,
+            });
+
+            if (!updatedPost) {
+                toast({
+                    title: `${action} post failed. Please try again.`,
+                });
+            }
+            return navigate(`/posts/${post.$id}`);
+        }
+
+        // ACTION = CREATE
+        const newPost = await createPost({
+            ...value,
+            userId: user.id,
+        });
+
+        if (!newPost) {
+            toast({
+                title: `${action} post failed. Please try again.`,
+            });
+        }
+        navigate("/");
+    };
 
     return (
         <Form {...form}>
@@ -71,6 +110,8 @@ const PostForm = () => {
                             <FormLabel className="shad-form_label">Add Photos</FormLabel>
                             <FormControl>
                                 <FileUploader
+                                    fieldChange={field.onChange}
+                                    mediaUrl={post?.imageUrl}
                                 />
                             </FormControl>
                             <FormMessage className="shad-form_message" />
@@ -117,18 +158,20 @@ const PostForm = () => {
                     <Button
                         type="button"
                         className="shad-button_dark_4"
-                    >
+                        onClick={() => navigate(-1)}>
                         Cancel
                     </Button>
                     <Button
                         type="submit"
                         className="shad-button_primary whitespace-nowrap"
-                    > Post
+                        disabled={isLoadingCreate || isLoadingUpdate}>
+                        {(isLoadingCreate || isLoadingUpdate) && <Loader />}
+                        {action} Post
                     </Button>
                 </div>
             </form>
         </Form>
     );
-}
+};
 
-export default PostForm
+export default PostForm;
