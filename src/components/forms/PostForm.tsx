@@ -1,18 +1,23 @@
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import * as z from "zod"
+import * as z from "zod";
 
-import { Button } from "@/components/ui/button"
+import { useForm } from "react-hook-form";
+
+import { zodResolver } from "@hookform/resolvers/zod";
+
 import {
     Form,
     FormControl,
-    FormDescription,
     FormField,
     FormItem,
     FormLabel,
     FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
+    Button,
+    Input,
+    Textarea,
+} from "@/components/ui";
+
+import { FileUploader } from "@/components/shared";
+
 
 const formSchema = z.object({
     username: z.string().min(2, {
@@ -38,27 +43,92 @@ const PostForm = () => {
 
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+            <form
+                onSubmit={form.handleSubmit(handleSubmit)}
+                className="flex flex-col gap-9 w-full  max-w-5xl">
                 <FormField
                     control={form.control}
-                    name="username"
+                    name="caption"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Username</FormLabel>
+                            <FormLabel className="shad-form_label">Caption</FormLabel>
                             <FormControl>
-                                <Input placeholder="shadcn" {...field} />
+                                <Textarea
+                                    className="shad-textarea custom-scrollbar"
+                                    {...field}
+                                />
                             </FormControl>
-                            <FormDescription>
-                                This is your public display name.
-                            </FormDescription>
-                            <FormMessage />
+                            <FormMessage className="shad-form_message" />
                         </FormItem>
                     )}
                 />
-                <Button type="submit">Submit</Button>
+
+                <FormField
+                    control={form.control}
+                    name="file"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel className="shad-form_label">Add Photos</FormLabel>
+                            <FormControl>
+                                <FileUploader
+                                />
+                            </FormControl>
+                            <FormMessage className="shad-form_message" />
+                        </FormItem>
+                    )}
+                />
+
+                <FormField
+                    control={form.control}
+                    name="location"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel className="shad-form_label">Add Location</FormLabel>
+                            <FormControl>
+                                <Input type="text" className="shad-input" {...field} />
+                            </FormControl>
+                            <FormMessage className="shad-form_message" />
+                        </FormItem>
+                    )}
+                />
+
+                <FormField
+                    control={form.control}
+                    name="tags"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel className="shad-form_label">
+                                Add Tags (separated by comma " , ")
+                            </FormLabel>
+                            <FormControl>
+                                <Input
+                                    placeholder="Art, Expression, Learn"
+                                    type="text"
+                                    className="shad-input"
+                                    {...field}
+                                />
+                            </FormControl>
+                            <FormMessage className="shad-form_message" />
+                        </FormItem>
+                    )}
+                />
+
+                <div className="flex gap-4 items-center justify-end">
+                    <Button
+                        type="button"
+                        className="shad-button_dark_4"
+                    >
+                        Cancel
+                    </Button>
+                    <Button
+                        type="submit"
+                        className="shad-button_primary whitespace-nowrap"
+                    > Post
+                    </Button>
+                </div>
             </form>
         </Form>
-    )
+    );
 }
 
 export default PostForm
