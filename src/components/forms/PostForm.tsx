@@ -14,7 +14,7 @@ import {
     Button,
     Input,
     Textarea,
-} from "@/components/ui";
+} from "../components/ui";
 
 import { PostValidation } from "@/lib/validation";
 import { useToast } from "@/components/ui/use-toast";
