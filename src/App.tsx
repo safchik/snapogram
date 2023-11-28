@@ -45,7 +45,7 @@ const App = () => {
 
             <Toaster />
         </main>
-    )
-}
+    );
+};
 
-export default App
+export default App;
