@@ -1,8 +1,14 @@
-import { useUserContext } from "@/context/AuthContext";
-import { useDeleteSavedPost, useLikePost, useSavePost } from "@/lib/react-query/queriesAndMutations";
-import { checkIsLiked } from "@/lib/utils";
 import { Models } from "appwrite";
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
+
+import { checkIsLiked } from "@/lib/utils";
+import {
+    useLikePost,
+    useSavePost,
+    useDeleteSavedPost,
+    useGetCurrentUser,
+} from "@/lib/react-query/queriesAndMutations";
 
 type PostStatsProps = {
     post: Models.Document;
@@ -10,6 +16,7 @@ type PostStatsProps = {
 };
 
 const PostStats = ({ post, userId }: PostStatsProps) => {
+    const location = useLocation();
     const likesList = post.likes.map((user: Models.Document) => user.$id);
 
     const [likes, setLikes] = useState<string[]>(likesList);
@@ -20,6 +27,10 @@ const PostStats = ({ post, userId }: PostStatsProps) => {
     const { mutate: deleteSavePost } = useDeleteSavedPost();
 
     const { data: currentUser } = useGetCurrentUser();
+
+    const savedPostRecord = currentUser?.save.find(
+        (record: Models.Document) => record.post.$id === post.$id
+    );
 
     useEffect(() => {
         setIsSaved(!!savedPostRecord);
@@ -56,8 +67,13 @@ const PostStats = ({ post, userId }: PostStatsProps) => {
         setIsSaved(true);
     };
 
+    const containerStyles = location.pathname.startsWith("/profile")
+        ? "w-full"
+        : "";
+
     return (
-        <div className={`flex justify-between items-center z-20 `}>
+        <div
+            className={`flex justify-between items-center z-20 ${containerStyles}`}>
             <div className="flex gap-2 mr-5">
                 <img
                     src={`${checkIsLiked(likes, userId)
@@ -84,7 +100,7 @@ const PostStats = ({ post, userId }: PostStatsProps) => {
                 />
             </div>
         </div>
-    )
-}
+    );
+};
 
-export default PostStats
+export default PostStats;
