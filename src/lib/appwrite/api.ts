@@ -2,6 +2,7 @@ import { ID, Query } from "appwrite";
 
 import { INewPost, INewUser } from "@/types";
 import { account, appwriteConfig, avatars, databases, storage } from "./config";
+import { useQuery } from "@tanstack/react-query";
 
 export async function createUserAccount(user: INewUser) {
     try {
@@ -251,6 +252,24 @@ export async function deleteSavedPost(savedRecordId: string) {
         if (!statusCode) throw Error;
 
         return { status: "Ok" };
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export async function getPostById(postId?: string) {
+    if (!postId) throw Error;
+
+    try {
+        const post = await databases.getDocument(
+            appwriteConfig.databaseId,
+            appwriteConfig.postCollectionId,
+            postId
+        );
+
+        if (!post) throw Error;
+
+        return post;
     } catch (error) {
         console.log(error);
     }
