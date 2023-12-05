@@ -5,19 +5,29 @@ import { Loader } from "@/components/shared";
 
 
 import {
-    useGetPostById
+    useGetPostById,
+
+    useDeletePost,
 } from "@/lib/react-query/queriesAndMutations";
 import { multiFormatDateString } from "@/lib/utils";
 import { useUserContext } from "@/context/AuthContext";
+import PostStats from "@/components/shared/PostStats";
 
 const PostDetails = () => {
     const navigate = useNavigate();
     const { id } = useParams();
     const { user } = useUserContext();
 
-    const { data: post, isPending } = useGetPostById(id);
+    const { data: post, isLoading } = useGetPostById(id);
+
+    const { mutate: deletePost } = useDeletePost();
 
 
+
+    const handleDeletePost = () => {
+        deletePost({ postId: id, imageId: post?.imageId });
+        navigate(-1);
+    };
 
     return (
         <div className="post_details-container">
@@ -36,7 +46,7 @@ const PostDetails = () => {
                 </Button>
             </div>
 
-            {isPending || !post ? (
+            {isLoading || !post ? (
                 <Loader />
             ) : (
                 <div className="post_details-card">
@@ -88,7 +98,7 @@ const PostDetails = () => {
                                 </Link>
 
                                 <Button
-
+                                    onClick={handleDeletePost}
                                     variant="ghost"
                                     className={`ost_details-delete_btn ${user.id !== post?.creator.$id && "hidden"
                                         }`}>
@@ -117,12 +127,21 @@ const PostDetails = () => {
                             </ul>
                         </div>
 
-
+                        <div className="w-full">
+                            <PostStats post={post} userId={user.id} />
+                        </div>
                     </div>
                 </div>
             )}
 
+            <div className="w-full max-w-5xl">
+                <hr className="border w-full border-dark-4/80" />
 
+                <h3 className="body-bold md:h3-bold w-full my-10">
+                    More Related Posts
+                </h3>
+
+            </div>
         </div>
     );
 };
