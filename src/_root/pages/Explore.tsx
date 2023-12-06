@@ -5,6 +5,8 @@ import { Input } from "@/components/ui/input";
 
 const Explore = () => {
     const [searchValue, setSearchValue] = useState('');
+
+
     //const shouldShowSearchResults = searchValue !== '';
     //const shouldShowPosts = !shouldShowSearchResults && posts.pages.every((item) => item.documents.length === 0)
 
