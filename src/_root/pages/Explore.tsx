@@ -2,6 +2,8 @@ import { useState } from "react"
 import { Input } from "@/components/ui/input";
 import useDebounce from "@/hooks/useDebounce";
 import { useGetPosts } from "@/lib/react-query/queriesAndMutations";
+import GridPostList from "@/components/shared/GridPostList";
+import SearchResults from "@/components/shared/SearchResults";
 // import SearchResults from "@/components/shared/SearchResults";
 // import GridPostList from "@/components/shared/GridPostList";
 
