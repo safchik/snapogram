@@ -25,8 +25,8 @@ const SearchResults = ({ isSearchFetching, searchedPosts }: SearchResultProps) =
 };
 
 const Explore = () => {
-    const { inView } = useInView();
-    const { data: posts, fetchNextPage } = useGetPosts();
+    const { ref, inView } = useInView();
+    const { data: posts, fetchNextPage, hasNextPage } = useGetPosts();
     const [searchValue, setSearchValue] = useState('');
 
     const debouncedSearch = useDebounce(searchValue, 500);
@@ -99,11 +99,11 @@ const Explore = () => {
                 )}
             </div>
 
-            {/* {hasNextPage && !searchValue && (
+            {hasNextPage && !searchValue && (
                 <div ref={ref} className="mt-10">
                     <Loader />
                 </div>
-            )} */}
+            )}
         </div>
     )
 }
